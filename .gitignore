@@ -1,0 +1,11 @@
+# IDE
+__pycache__/
+.idea/
+
+# pytest
+.pytest_cache/
+
+# pre-commit
+.mypy_cache/
+
+# Others
