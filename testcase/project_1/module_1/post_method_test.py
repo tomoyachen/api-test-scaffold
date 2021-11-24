@@ -4,15 +4,9 @@ from request.project_1.module_1.post_method_request import PostMethodRequest
 
 class PostMethodTest():
 
-    @pytest.fixture()
+    @pytest.fixture(scope='function')
     def api(self):
         request = PostMethodRequest()
-        request.data = {
-            "id": 1,
-            "keywords": "",
-            "code": 200,
-            "message": None
-        }
         yield request
 
     def test_post_method(self, api):
@@ -28,4 +22,3 @@ class PostMethodTest():
         api.data['message'] = 'id 不存在' # 剧情需要
         api.request()
         api.assertion(expect_code=1001, expect_message='id 不存在')
-
