@@ -1,21 +1,31 @@
 import pytest
-import requests
+from request.project_1.module_1.post_method_request import PostMethodRequest
 
 
-class PostMethodTest:
+class PostMethodTest():
 
-    @staticmethod
-    def test_post_method():
-        url = "https://httpbin.org/post"
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        body = {
+    @pytest.fixture()
+    def api(self):
+        request = PostMethodRequest()
+        request.data = {
             "id": 1,
-            "keywords": ""
+            "keywords": "",
+            "code": 200,
+            "message": None
         }
+        yield request
 
-        response = requests.request("POST", url, headers=headers, json=body)
-        print(response.text)
-        assert response.status_code == 200
-        # assert response.json()["errCode"] == 200
+    def test_post_method(self, api):
+
+        api.request()
+        api.assertion(expect_code=200)
+
+
+    def test_post_method_with_id_not_exists(self, api):
+
+        api.data['id'] = -1,
+        api.data['code'] = 1001 # 剧情需要
+        api.data['message'] = 'id 不存在' # 剧情需要
+        api.request()
+        api.assertion(expect_code=1001, expect_message='id 不存在')
+
