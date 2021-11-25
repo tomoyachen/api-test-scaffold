@@ -1,0 +1,18 @@
+# Domain
+project_1_url: "https://httpbin.org"
+
+# MySQL
+mysql_config:
+  host: "127.0.0.1"
+  port: 3306
+  user: "zhangsan"
+  password: "Aa111111"
+  db: "project1"
+  charset: 'utf8'
+  cursorclass: pymysql.cursors.DictCursor
+
+# Redis
+redis_config:
+  host: "127.0.0.1"
+  port: 6379
+  password: "Aa111111"

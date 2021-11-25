@@ -1,0 +1,11 @@
+normal_user:
+  id: 1001
+  username: "zhangsan"
+  password: "Aa111111"
+  phone: "14100000001"
+
+super_user:
+  id: 1002
+  username: "lisi"
+  password: "Aa111111"
+  phone: "14100000002"

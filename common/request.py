@@ -5,8 +5,8 @@ class Request():
     def __init__(self, cookies = None):
         self.method = "POST"
         self.url = None
-        self.host = "https://httpbin.org"
-        self.path = "/post"
+        self.host = None
+        self.path = None
         self.headers = {
             "content-type": "application/json; charset=utf-8"
         }
