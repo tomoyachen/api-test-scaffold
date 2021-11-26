@@ -27,6 +27,15 @@ pytest testcase
 ```
 
 # Allure Report
+## 安装 Allure
+下载地址：https://github.com/allure-framework/allure2/releases
+1. 下载最新 Release 版，例：`allure-2.16.1.zip`
+
+2. 下载后解压到你本地目录
+
+3. 配置环境变量，例：ALLURE_HOME: D:\Software\allure-2.13.9
+
+## 生成报告
 ```bash
 # 命令行执行（默认增量报告）
 pytest testcase -s -v --alluredir=outputs/report
