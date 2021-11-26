@@ -49,7 +49,7 @@ class Config:
 
     @classmethod
     def get_test_env(cls):
-        return cls.get_environ("TEST_ENVIRONMENT")
+        return cls.get_environ("TEST_ENVIRONMENT") or "dev"
 
     @classmethod
     def get_configs(cls):

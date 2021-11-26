@@ -1,5 +1,6 @@
 from common.request import Request
 from common.config import Config
+from common.db import Mysql
 
 class ClassicSceneRequest(Request):
     def __init__(self, cookies = None):
@@ -24,7 +25,13 @@ class ClassicSceneRequest(Request):
             assert actual_status == expect_status
 
             # 一般来源 2: 其他接口
+
             # 一般来源 3: 数据库
+            # mysql = Mysql()
+            # result = mysql.select_one("select * from s_link where id = 1")
+            # actual_status_db = self.response.json()["json"]["status"]
+            # expect_status_db = result["status"]
+            # assert actual_status_db == expect_status_db
 
     def get_user_last_article_id(self):
         self.data["id"] = 2

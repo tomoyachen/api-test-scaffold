@@ -9,10 +9,10 @@ mysql_config:
   password: "Aa111111"
   db: "project1"
   charset: 'utf8'
-  cursorclass: pymysql.cursors.DictCursor
 
 # Redis
 redis_config:
   host: "127.0.0.1"
   port: 6379
   password: "Aa111111"
+  db: 0
