@@ -60,8 +60,16 @@ class Request():
             path = "&".join([f'{key}={self.params[key]}' for key in self.params])
             url_with_params += f"&{path}" if "?" in url_with_params else f"?{path}"
 
+        from common.config import Config
+
+        callers = []
+        for item in traceback.extract_stack()[:-2]:
+            if Config.get_root_dir() in item[0]:
+                callers.append(item.__str__())
+
         log = logging.getLogger()
-        log.info(f"""Caller: {traceback.extract_stack()[-3].__str__()}
+        nl = '\n'
+        log.info(f"""Caller: {nl.join(callers)}
 {self.method}  {url_with_params}
 Request Headers: {self.headers}
 Request Body: {self.data}
