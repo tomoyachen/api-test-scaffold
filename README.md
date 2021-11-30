@@ -18,10 +18,10 @@ poetry install
 
 ## 执行用例
 ```bash
-# Python 全局环境
+# 全局环境下执行（方式 1）
 poetry run pytest testcase
 
-# Poetry 虚拟环境
+# 进入虚拟环境后执行（方式 2）
 poetry shell
 pytest testcase
 ```
@@ -37,15 +37,33 @@ pytest testcase
 
 ## 生成报告
 ```bash
-# 命令行执行（默认增量报告）
-pytest testcase -s -v --alluredir=outputs/report
+# 执行用例时，生成结果（默认增量数据）
+pytest testcase -s -v --alluredir=outputs/allure-results
 
-# 命令行执行（清除上一次报告）（基于 pytest.ini 默认参数）
-pytest testcase -s -v --alluredir=outputs/report --clean-alluredir
-
-# 启动报告服务（仅启服务，适合本地浏览）
-allure serve outputs/report
-
-# 生成 html 报告（生成报告，适合 CI）
-allure generate outputs/report -o outputs/report-html --clean
+# 执行用例时，生成结果（清除上一次数据）（基于 pytest.ini 默认参数）
+pytest testcase -s -v --alluredir=outputs/allure-results --clean-alluredir
 ```
+```bash
+# 根据结果，启动报告 web 服务（仅启服务，适合本地浏览）
+allure serve outputs/allure-results
+```
+
+```bash
+# 根据结果，生成 html 报告文件（生成报告，适合 CI）
+allure generate outputs/allure-results -o outputs/allure-report --clean
+```
+
+# CI/ CD
+## 支持 GitLab CI
+工作中一般使用公司仓库比较定制化的镜像，本项目使用的是完全免登录的第三方 docker 镜像
+
+python:3.8 镜像，用于执行 pytest 测试
+
+frankescobar/allure-docker-service:latest 镜像，用于 allure 生成报告
+
+ref: https://github.com/fescobar/allure-docker-service
+
+ref: https://tech-en.netlify.app/articles/en513432/index.html
+
+## GitLab Pages
+保持最新的测试报告，历史报告可以在 Pipleine allure-report Job 中访问。
