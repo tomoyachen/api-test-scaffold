@@ -75,6 +75,7 @@ class Request():
         nl = '\n'
         log.info(f"""Caller: {nl.join(callers)}
 {self.method.upper()}  {url_with_params}
+Cookies: {json.dumps(self.cookies) if self.cookies else '未携带 cookies'}
 Request Headers: {json.dumps(self.headers)}
 Request Body: {json.dumps(self.data)}
 HTTP Code: {self.response.status_code}

@@ -11,7 +11,7 @@ def pytest_addoption(parser): # 添加命令行参数
 
 def pytest_configure(config): # 初始化配置
     # 鉴于 PyCharm 单独执行用例总是在当前目录下生成报告，可以强制设定为根目录生成报告
-    root_allure_report_dir = os.path.join(Config.get_root_dir(), config.getoption("allure_report_dir"))
+    root_allure_report_dir = os.path.join(Config.get_root_dir(), config.option.allure_report_dir)
     config.option.allure_report_dir = root_allure_report_dir
 
 @pytest.fixture(scope="session", autouse=True)
