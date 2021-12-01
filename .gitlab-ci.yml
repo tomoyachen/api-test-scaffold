@@ -16,6 +16,8 @@ cache:
   key: $CI_PROJECT_ID
   paths:
     - pip-cache
+    - allure-results-global # 历史全部数据，用于生成聚合报告
+    - allure-report-global # 上一份报告，需要 history 目录生成趋势图
 
 
 before_script:
@@ -34,6 +36,7 @@ api-test:
     name: '$CI_COMMIT_REF_SLUG'
     paths:
       - allure-results
+      - allure-results-global
     when: always
     expire_in: 7 day
   allow_failure: true
@@ -48,8 +51,21 @@ api-test:
     - python3 -m poetry config cache-dir /cache/pypoetry --local
     - python3 -m poetry config virtualenvs.path /cache/pypoetry/virtualenvs --local
     - python3 -m poetry install
-    - mkdir -p outputs
-    - python3 -m poetry run pytest ${RUN_TESTCASE_DIR} --env ${RUN_ENVIRONMENT} -s -v --alluredir=allure-results --clean-alluredir
+    - |
+      if [ $RUN_TESTCASE_DIR ];then
+        python3 -m poetry run pytest ${RUN_TESTCASE_DIR} --env ${RUN_ENVIRONMENT} -s -v --alluredir=allure-results --clean-alluredir
+      else
+        python3 -m poetry run pytest $(sh script/testcase_changes.sh ) --env ${RUN_ENVIRONMENT} -s -v --alluredir=allure-results --clean-alluredir
+      fi
+    - sh scripts/generate_allure_environment.sh > allure-results/environment.properties # allure 环境变量信息
+    - sh scripts/generate_allure_executor.sh > allure-results/executor.json # allure 执行者信息
+    - mkdir -p allure-results-global
+    - cp -r allure-results/* allure-results-global
+    - | # allure 需要根据上一份报告的 history 目录生成 trend 图
+      if [[ -d "allure-report-global/history" ]]; then
+        mkdir -p allure-results-global/history
+        cp -r allure-report-global/history/* allure-results-global/history || true
+      fi
 
 
 # `report` stage
@@ -61,14 +77,18 @@ allure-report:
     name: '$CI_COMMIT_REF_SLUG'
     paths:
       - allure-report
+      - allure-report-global
     when: always
     expire_in: 7 day
-  script: # 这个镜像只能使用指定目录 allure-results & allure-report，其他目录无写入权限。
+  script: # 这个镜像写入权限很迷，比如 allure-report-global 目录有个空的 history 就报错。
     - |
       if [[ -d "allure-results" ]]; then
-        allure generate -c allure-results -o allure-report --clean
+        allure generate allure-results -o allure-report --clean
       fi
-
+      if [[ -d "allure-results-global" ]]; then
+        allure generate allure-results-global -o allure-report-global --clean
+      fi
+    - echo "本次报告" https://${CI_PROJECT_NAMESPACE}.gitlab.io/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/allure-report/index.html
 
 
 # `noty` stage
@@ -78,15 +98,13 @@ pages: # For GitLab Pages, this job has a specific name, called pages.
   artifacts:
     name: '$CI_COMMIT_REF_SLUG'
     paths:
-      - allure-report
       - public # GitLab Pages only considers files in a directory called public.
     when: always
     expire_in: 7 day
   script:
-    - mkdir public
-    - cp -r allure-report/* public
-    - echo $CI_PAGES_URL
-    - echo https://${CI_PROJECT_NAMESPACE}.gitlab.io/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/allure-report/index.html
+    - mkdir -p public
+    - cp -r allure-report-global/* public
+    - echo "全量报告" $CI_PAGES_URL
 
 
 # `noty` stage

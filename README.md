@@ -54,7 +54,7 @@ allure generate outputs/allure-results -o outputs/allure-report --clean
 ```
 
 # CI/ CD
-## 支持 GitLab CI
+## 景象说明
 工作中一般使用公司仓库比较定制化的镜像，本项目使用的是完全免登录的第三方 docker 镜像
 
 python:3.8 镜像，用于执行 pytest 测试
@@ -65,5 +65,15 @@ ref: https://github.com/fescobar/allure-docker-service
 
 ref: https://tech-en.netlify.app/articles/en513432/index.html
 
+## 仅执行最近一次 merge 改动范围的用例（默认关闭）
+如果有这个需求，可以将 .gitlab-ci.yml 中的 RUN_TESTCASE_DIR 默认值设为 ""。
+
+
 ## GitLab Pages
-保持最新的测试报告，历史报告可以在 Pipleine allure-report Job 中访问。
+### 单次执行报告
+allure-report job 会生成单次报告（allure-report 目录）和增量聚合报告（allure-report-global 目录）存放于 artifacts。
+具体地址可以在 job 输出中找到。
+
+### 增量聚合报告
+pages job 会把增量聚合报告移至 public 目录，部署成 pages 页面。
+具体地址可以在 job 输出中找到。
