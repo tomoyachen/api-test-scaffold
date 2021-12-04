@@ -20,8 +20,19 @@ class Request():
         self.response = None
 
 
-    # @allure.step("请求")
     def request(self):
+        @allure.step(f"请求 {self.path}")
+        def __request_and_get_response(info:dict = self.__dict__) -> requests.models.Response: # 不需要传入参数，纯粹为了 allure 报告好看
+            return s.request(
+                method=self.method,
+                url=self.url,
+                headers=self.headers,
+                params=self.params,
+                data=json.dumps(self.data),
+                cookies=self.cookies,
+                verify=False
+            )
+
         requests.packages.urllib3.disable_warnings()
         requests.adapters.DEFAULT_RETRIES = 5
 
@@ -29,16 +40,8 @@ class Request():
 
         s = requests.session()
         s.keep_alive = False
-        with allure.step(f"请求 {self.path}"): # 为了显示 path，因为没有入参，所以不能用装饰器
-            self.response = s.request(
-                method=self.method,
-                url=self.url,
-                headers=self.headers,
-                params=self.params,
-                data=json.dumps(self.data),
-                cookies=self.cookies,
-                verify=False,
-            )
+        self.response = __request_and_get_response()
+
         self.__log()
         self.is_success = True if self.response.json()["json"]["code"] == 200 else False
 
@@ -75,7 +78,7 @@ class Request():
         nl = '\n'
         log.info(f"""Caller: {nl.join(callers)}
 {self.method.upper()}  {url_with_params}
-Cookies: {json.dumps(self.cookies) if self.cookies else '未携带 cookies'}
+Cookies: {json.dumps(self.cookies)}
 Request Headers: {json.dumps(self.headers)}
 Request Body: {json.dumps(self.data)}
 HTTP Code: {self.response.status_code}
