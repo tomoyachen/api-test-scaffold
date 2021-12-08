@@ -53,3 +53,12 @@ def login():
         return cookies
 
     yield __login
+
+
+@pytest.fixture(scope="class")
+def login_with_user(login):
+    def __login_with_user(user: dict) -> str:
+        if isinstance(user, dict) and 'username' in user and 'password' in user:
+            return login(user['username'], user['password'])
+
+    yield __login_with_user

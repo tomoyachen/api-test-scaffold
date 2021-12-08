@@ -3,9 +3,11 @@ normal_user:
   username: "zhangsan"
   password: "Aa111111"
   phone: "14100000001"
+  site: "project_1"
 
 super_user:
   id: 1002
   username: "lisi"
   password: "Aa111111"
   phone: "14100000002"
+  site: "project_1"

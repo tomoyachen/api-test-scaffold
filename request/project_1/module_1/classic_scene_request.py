@@ -3,16 +3,16 @@ from common.config import Config
 from common.db import Mysql
 
 class ClassicSceneRequest(Request):
-    def __init__(self, cookies = None):
-        super().__init__(cookies)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.method = "POST"
         self.host = Config.get_config("project_1_url")
         self.path = "/post"
         self.data = {
             "id": 1,
             "status": 1,
-            "code": 200, # 剧情需要
-            "message": None # 剧情需要
+            "code": 200, # 剧情需要，mock 数据
+            "message": None # 剧情需要，mock 数据
         }
 
     def assertion(self, expect_code = None, expect_message = None):

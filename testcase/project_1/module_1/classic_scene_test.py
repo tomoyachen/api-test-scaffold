@@ -8,16 +8,11 @@ from common.config import Config
 @allure.story("经典场景示例接口")
 class ClassicSceneTest():
 
-    @pytest.fixture(scope='class')
-    def cookies(self, login):
-        user = Config.get_fixture("project_1", "normal_user")
-        user_cookies = login(username=user["username"], password=user["password"])
-        yield user_cookies
-
-    # 没有在 api 中获取 cookies 是因为 api 最好 scope=function，而 cookies 最好是 scope=class
-    # api 也可以设置为 scope=class，但是需要用 copy.deepcopy 做数据隔离，否则你第1条用例改动的属性，第2条用例会继承数据。
+    # 这里用 scope=function 是因为有免登陆策略，否则应该用 scope=class，仅登录一次。
+    # scope=class 还需要做数据隔离，否则第2条用例拿到的数据会被第1条用例污染。可以用 _api = copy.deepcopy(api) 来做数据隔离。
     @pytest.fixture(scope='function')
-    def api(self, login, cookies):
+    def api(self, login_with_user):
+        cookies = login_with_user(Config.get_fixture("project_1", "normal_user"))
         request = ClassicSceneRequest(cookies=cookies)
         yield request
 
