@@ -27,6 +27,10 @@ pytest testcase
 ```
 
 # Allure Report
+## 安装 JDK
+JDK 下载地址：https://www.oracle.com/java/technologies/downloads/#java11-windows
+
+
 ## 安装 Allure
 下载地址：https://github.com/allure-framework/allure2/releases
 1. 下载最新 Release 版，例：`allure-2.16.1.zip`
@@ -54,7 +58,7 @@ allure generate outputs/allure-results -o outputs/allure-report --clean
 ```
 
 # CI/ CD
-## 景象说明
+## 镜像说明
 工作中一般使用公司仓库比较定制化的镜像，本项目使用的是完全免登录的第三方 docker 镜像
 
 python:3.8 镜像，用于执行 pytest 测试
