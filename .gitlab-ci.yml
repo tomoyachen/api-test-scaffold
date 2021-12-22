@@ -5,8 +5,9 @@ stages:
 - noty
 
 variables:
-  RUN_ENVIRONMENT: dev
-  RUN_TESTCASE_DIR: testcase
+  ENVIRONMENT: dev
+  TESTCASE_DIR: testcase
+  FEISHU_NOTY_TOKEN: ''
 
 default:
   tags:
@@ -40,22 +41,23 @@ api-test:
     when: always
     expire_in: 7 day
   allow_failure: true
-  script:
+  before_script:
     - |
       mkdir -p pip-cache
       export PIP_CACHE_DIR="pip-cache"
       export LANG=en_US:zh_CN.UTF-8
       source /etc/profile
-    - python3 -m pip install --upgrade pip
-    - pip install poetry > temp.log 2>&1
+    - python3 -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
+    - pip install poetry -i https://pypi.tuna.tsinghua.edu.cn/simple > temp.log 2>&1
     - python3 -m poetry config cache-dir /cache/pypoetry --local
     - python3 -m poetry config virtualenvs.path /cache/pypoetry/virtualenvs --local
     - python3 -m poetry install
+  script:
     - |
-      if [ $RUN_TESTCASE_DIR ];then
-        python3 -m poetry run pytest ${RUN_TESTCASE_DIR} --env ${RUN_ENVIRONMENT} -s -v --alluredir=allure-results --clean-alluredir
+      if [ $TESTCASE_DIR ];then
+        python3 -m poetry run pytest ${TESTCASE_DIR} --env ${ENVIRONMENT} -s -v --alluredir=allure-results --clean-alluredir
       else
-        python3 -m poetry run pytest $(sh script/testcase_changes.sh ) --env ${RUN_ENVIRONMENT} -s -v --alluredir=allure-results --clean-alluredir
+        python3 -m poetry run pytest $(sh script/testcase_changes.sh ) --env ${ENVIRONMENT} -s -v --alluredir=allure-results --clean-alluredir
       fi
     - sh scripts/generate_allure_environment.sh > allure-results/environment.properties # allure 环境变量信息
     - sh scripts/generate_allure_executor.sh > allure-results/executor.json # allure 执行者信息
@@ -72,7 +74,7 @@ api-test:
 #========================================================
 allure-report:
   stage: report
-  image: frankescobar/allure-docker-service:latest # ref: https://github.com/fescobar/allure-docker-service
+  image: frankescobar/allure-docker-service:2.9.0 # ref: https://github.com/fescobar/allure-docker-service
   artifacts:
     name: '$CI_COMMIT_REF_SLUG'
     paths:

@@ -63,7 +63,7 @@ allure generate outputs/allure-results -o outputs/allure-report --clean
 
 python:3.8 镜像，用于执行 pytest 测试
 
-frankescobar/allure-docker-service:latest 镜像，用于 allure 生成报告
+frankescobar/allure-docker-service:2.9.0 镜像，用于 allure 生成报告
 
 ref: https://github.com/fescobar/allure-docker-service
 

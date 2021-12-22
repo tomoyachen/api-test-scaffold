@@ -45,4 +45,4 @@ class ClassicSceneTest():
 
         api.data["status"] = status
         api.request()
-        api.assertion(expect_code=200)
+        api.assertion(expect_code=200, expect_custom_field="需要在断言中使用的内容")
