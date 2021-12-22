@@ -26,7 +26,8 @@ elif [ `echo "$rate_without_skipped < 100" | bc` -eq 1 ];then
 fi
 
 start_timestamp=`echo $summary | grep -Eo '"start" : [0-9]+?,' | grep -Eo '[0-9]+'`
-start_datetime=`date -d @$[$start_timestamp/1000] "+%Y-%m-%d %H:%M:%S"`
+# linux 是 date -d, mac 是 date -r
+start_datetime=`date -d @$(expr $start_timestamp / 1000) "+%Y-%m-%d %H:%M:%S"`
 
 DING_URL="https://open.feishu.cn/open-apis/bot/v2/hook/${FEISHU_NOTY_TOKEN}"
 
@@ -71,7 +72,7 @@ curl $DING_URL -H "Content-Type: application/json" \
             {
               \"is_short\": true,
               \"text\": {
-                \"content\": \"**负责人：**<at email=example@example.com>${GITLAB_USER_NAME}</at>\",
+                \"content\": \"**负责人：**<at id=1>${GITLAB_USER_NAME}</at>\",
                 \"tag\": \"lark_md\"
               }
             },
@@ -106,7 +107,7 @@ curl $DING_URL -H "Content-Type: application/json" \
           \"tag\": \"div\",
           \"text\": {
             \"tag\": \"lark_md\",
-            \"content\": \"🙋️  <a href='http://www.baidu.com'>我要反馈误报</a> ｜ 📝  <a href='${CI_JOB_URL}'>查看触发流程</a>\"
+            \"content\": \"🙋️  <a href='https://github.com/tomoyachen/api-test-scaffold'>我要反馈误报</a> ｜ 📝  <a href='${CI_JOB_URL}'>查看触发流程</a>\"
           },
           \"extra\": {
             \"tag\": \"button\",

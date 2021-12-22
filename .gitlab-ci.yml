@@ -74,7 +74,7 @@ api-test:
 #========================================================
 allure-report:
   stage: report
-  image: frankescobar/allure-docker-service:2.9.0 # ref: https://github.com/fescobar/allure-docker-service
+  image: frankescobar/allure-docker-service:latest # ref: https://github.com/fescobar/allure-docker-service
   artifacts:
     name: '$CI_COMMIT_REF_SLUG'
     paths:
@@ -90,6 +90,7 @@ allure-report:
       if [[ -d "allure-results-global" ]]; then
         allure generate allure-results-global -o allure-report-global --clean
       fi
+    - bash scripts/pretty_allure_report.sh
     - echo "本次报告" https://${CI_PROJECT_NAMESPACE}.gitlab.io/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/allure-report/index.html
 
 
