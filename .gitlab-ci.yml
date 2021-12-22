@@ -119,4 +119,4 @@ noty-dingtalk:
 noty-feishu:
   stage: noty
   script:
-    - pwd # TODO
+    - sh scripts/send_feishu_noty.sh # 依赖 allure-results 目录获取数据
