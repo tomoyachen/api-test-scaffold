@@ -1,5 +1,8 @@
 import pytest
 import allure
+
+from common.enums import UserType
+from common.tools import Tools
 from request.project_1.module_1.classic_scene_request import ClassicSceneRequest
 from common.config import Config
 
@@ -12,7 +15,7 @@ class ClassicSceneTest():
     # scope=class 还需要做数据隔离，否则第2条用例拿到的数据会被第1条用例污染。可以用 _api = copy.deepcopy(api) 来做数据隔离。
     @pytest.fixture(scope='function')
     def api(self, login_with_user):
-        cookies = login_with_user(Config.get_fixture("project_1", "normal_user"))
+        cookies = login_with_user(Tools.get_user(UserType.NORMAL_USER))
         request = ClassicSceneRequest(cookies=cookies)
         yield request
 
@@ -28,7 +31,8 @@ class ClassicSceneTest():
         """测试用例的详细描述可以写在这里"""
 
         api.request()
-        api.assertion(expect_code=200)
+        api.asserts(expect_code=200)
+        api.expect("$..id").to_equals(1)
 
     @allure.title("动态获取数据")
     @pytest.mark.p1
@@ -36,7 +40,7 @@ class ClassicSceneTest():
 
         api.data["id"] = last_article_id
         api.request()
-        api.assertion(expect_code=200)
+        api.asserts(expect_code=200)
 
     @allure.title("参数化 status: {status}")
     @pytest.mark.p1
@@ -45,4 +49,4 @@ class ClassicSceneTest():
 
         api.data["status"] = status
         api.request()
-        api.assertion(expect_code=200, expect_custom_field="需要在断言中使用的内容")
+        api.asserts(expect_code=200, expect_custom_field="需要在断言中使用的内容")

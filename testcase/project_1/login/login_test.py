@@ -1,5 +1,8 @@
 import pytest
 import allure
+
+from common.enums import UserType
+from common.tools import Tools
 from request.project_1.login.login_request import LoginRequest
 from common.config import  Config
 
@@ -11,7 +14,7 @@ class LoginTest():
     @pytest.fixture(scope='function')
     def api(self):
         request = LoginRequest()
-        user = Config.get_fixture("project_1", "normal_user")
+        user = Tools.get_user(UserType.NORMAL_USER)
         request.data["username"] = user["username"]
         request.data["password"] = user["password"]
         yield request
@@ -20,4 +23,4 @@ class LoginTest():
     def test_login(self, api):
 
         api.request()
-        api.assertion(expect_code=200)
+        api.asserts(expect_code=200)

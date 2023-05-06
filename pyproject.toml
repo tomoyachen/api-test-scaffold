@@ -12,6 +12,8 @@ pyyaml = "^6.0"
 allure-pytest = "^2.9.45"
 pymysql = "^1.0.2"
 redis = "^4.0.2"
+curlify = "^2.2.1"
+jsonpath = "^0.82"
 
 [tool.poetry.dev-dependencies]
 

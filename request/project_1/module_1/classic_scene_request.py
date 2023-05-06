@@ -1,8 +1,8 @@
-from common.request import Request
+from common.base_request import BaseRequest
 from common.config import Config
 from common.db import Mysql
 
-class ClassicSceneRequest(Request):
+class ClassicSceneRequest(BaseRequest):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.method = "POST"
@@ -15,8 +15,8 @@ class ClassicSceneRequest(Request):
             "message": None # 剧情需要，mock 数据
         }
 
-    def assertion(self, expect_code = None, expect_message = None, **extras):
-        super().assertion(expect_code=expect_code, expect_message=expect_message)
+    def asserts(self, expect_code = None, expect_message = None, **extras):
+        super().asserts(expect_code=expect_code, expect_message=expect_message)
         if self.is_success: # 业务上成功的接口，一般需要做额外的数据断言
 
             # 一般来源 1: 请求参数

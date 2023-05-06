@@ -1,11 +1,13 @@
+import curlify
 import requests
 import json
 import logging
-import traceback
 import allure
+from jsonpath import jsonpath
+from common.expect import Expect
+import _io
 
-
-class Request():
+class BaseRequest():
     def __init__(self, cookies: requests.cookies.RequestsCookieJar = None, user: dict = None):
         self.method = "POST"
         self.url = None
@@ -17,7 +19,7 @@ class Request():
         self.cookies = cookies if cookies or not user else self.__login_and_get_cookies(user) # cookies 优先
         self.params = {}
         self.data = {}
-        self.response = None
+        self.response: requests.models.Response = None
 
 
     def request(self):
@@ -42,23 +44,36 @@ class Request():
         s.keep_alive = False
         self.response = __request_and_get_response()
 
-        self.__log()
-        self.is_success = True if self.response.json()["json"]["code"] == 200 else False
+        self.__network_log()
+        self.is_success = True if self.response_json() and self.response_json().get("json").get("code") == 200 else False
 
         return self.response
 
+    def response_json(self):
+        try:
+            return self.response.json()
+        except:
+            return {}
+
     @allure.step("断言")
-    def assertion(self, expect_code = None, expect_message = None):
+    def asserts(self, expect_code = None, expect_message = None, expect_httpcode = 200):
         if self.response is None:
             raise Exception("请先请求接口~")
 
-        assert self.response.status_code == 200, f"HTTP CODE {self.response.status_code}"
+        assert self.response.status_code == expect_httpcode, f"HTTP CODE {self.response.status_code}"
 
         if expect_code is not None:
-            assert expect_code == self.response.json()["json"]["code"], f"code 不一致"
+            assert expect_code == self.response.json()["json"]["code"], f"errCode 不一致"
 
         if expect_message  is not None:
             assert expect_message in self.response.json()["json"]["message"], f"message 不一致"
+
+
+    @allure.step("断言")
+    def expect(self, response_expr) -> Expect:
+        results = jsonpath(self.response.json(), response_expr)
+        if results and len(results) > 0:
+            return Expect(results[0])
 
     @allure.step("登录")
     def __login_and_get_cookies(self, user: dict):
@@ -101,26 +116,46 @@ class Request():
                     Config.set_environ("PROJECT_1_USER_POOL", json.dumps(user_pool))
                     return cookies
 
-    def __log(self):
+    def __network_log(self):
+
         url_with_params = self.url
         if self.params:
             path = "&".join([f'{key}={self.params[key]}' for key in self.params])
             url_with_params += f"&{path}" if "?" in url_with_params else f"?{path}"
 
-        from common.config import Config
+        if isinstance(self.response.request.body, dict):
+            request_data = json.dumps(self.response.request.body, ensure_ascii=False)
+        elif isinstance(self.response.request.body, _io.BufferedReader):
+            request_data = '二进制数据，不宜展示'
+        elif isinstance(self.response.request.body, str):
+            request_data = self.response.request.body
+        else:
+            request_data = '无法展示'
 
-        callers = []
-        for item in traceback.extract_stack()[:-2]:
-            if Config.get_root_dir() in item[0]:
-                callers.append(item.__str__())
+        content_type = self.response.headers['Content-Type']
+
+        if 'application/json' in content_type:
+            try:
+                response_data = json.dumps(self.response.json(), ensure_ascii=False)
+            except ValueError:
+                response_data = "无法解析 JSON 响应"
+        elif 'text/html' in content_type:
+            response_data = "HTML 响应，不宜展示"
+        elif 'application/octet-stream' in content_type:
+            response_data = '二进制响应，不宜展示'
+        else:
+            response_data = '未知的响应类型'
 
         log = logging.getLogger()
-        nl = '\n'
-        log.info(f"""Caller: {nl.join(callers)}
-{self.method.upper()}  {url_with_params}
-Cookies: {self.cookies}
-Request Headers: {json.dumps(self.headers)}
-Request Body: {json.dumps(self.data)}
-HTTP Code: {self.response.status_code}
-Response Body: {self.response.text}"""
-                 )
+
+        log.info("=========== network start ===========")
+        log.info(f"{self.method.upper()} {url_with_params}")
+        log.info("Request Headers: " + json.dumps(self.headers, ensure_ascii=False))
+        log.info("Request Body: " + request_data)
+        log.info("HTTP Code: " + str(self.response.status_code))
+        log.info("Response Body: " + response_data)
+        if not isinstance(self.response.request.body, _io.BufferedReader):
+            log.info("=========== cURL ===========")
+            log.info(curlify.to_curl(self.response.request)) # 泄露 cookies 风险，不建议使用
+        log.info("=========== network end ===========")
+

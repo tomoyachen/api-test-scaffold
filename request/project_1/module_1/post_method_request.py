@@ -1,7 +1,7 @@
-from common.request import Request
+from common.base_request import BaseRequest
 from common.config import Config
 
-class PostMethodRequest(Request):
+class PostMethodRequest(BaseRequest):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.method = "POST"
