@@ -1,6 +1,6 @@
 import pytest
 import os
-from common.config import Config
+from common.tools import Tools
 import logging
 import requests
 import allure
@@ -11,7 +11,7 @@ def pytest_addoption(parser): # 添加命令行参数
 
 def pytest_configure(config): # 初始化配置
     # 鉴于 PyCharm 单独执行用例总是在当前目录下生成报告，可以强制设定为根目录生成报告
-    root_allure_report_dir = os.path.join(Config.get_root_dir(), config.option.allure_report_dir)
+    root_allure_report_dir = os.path.join(Tools.get_root_dir(), config.option.allure_report_dir)
     config.option.allure_report_dir = root_allure_report_dir
 
 @pytest.fixture(scope="session", autouse=True)
@@ -20,10 +20,10 @@ def configs(pytestconfig): # 获取配置 & 写入 env (当前测试环境)
     environment = environment if environment else 'dev'
 
     # env 写入环境变量
-    Config.set_test_env(environment)
+    Tools.set_test_env(environment)
 
     config_path = os.path.join(pytestconfig.rootdir, "config", f"{environment}.yaml")
-    yield Config.get_yaml(config_path)
+    yield Tools.get_yaml(config_path)
 
 
 @pytest.fixture(scope="class")

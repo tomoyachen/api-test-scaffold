@@ -1,6 +1,6 @@
 import pymysql
 import redis
-from common.config import Config
+from common.tools import Tools
 import logging
 import allure
 
@@ -9,7 +9,7 @@ log = logging.getLogger()
 
 class Mysql:
     def __init__(self, mysql_config=None):
-        mysql_config = mysql_config if mysql_config else Config.get_config("mysql_config")
+        mysql_config = mysql_config if mysql_config else Tools.get_config("mysql_config")
         self.conn = pymysql.connect(**mysql_config, autocommit = False)
         self.cur = self.conn.cursor(cursor = pymysql.cursors.DictCursor)
 
@@ -62,7 +62,7 @@ class Mysql:
 
 class Redis:
     def __init__(self, redis_config=None):
-        redis_config = redis_config if redis_config else Config.get_config("redis_config")
+        redis_config = redis_config if redis_config else Tools.get_config("redis_config")
         self.host = redis_config["host"]
         self.port = redis_config["port"]
         self.password = redis_config["password"]

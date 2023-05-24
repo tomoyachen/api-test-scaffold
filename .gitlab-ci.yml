@@ -6,7 +6,7 @@ stages:
 
 variables:
   ENVIRONMENT: dev
-  TESTCASE_DIR: testcase
+  TESTCASE_DIR: tests
   FEISHU_NOTY_TOKEN: ''
 
 default:

@@ -19,11 +19,11 @@ poetry install
 ## 执行用例
 ```bash
 # 全局环境下执行（方式 1）
-poetry run pytest testcase
+poetry run pytest tests
 
 # 进入虚拟环境后执行（方式 2）
 poetry shell
-pytest testcase
+pytest tests
 ```
 
 # Allure Report
@@ -42,10 +42,10 @@ JDK 下载地址：https://www.oracle.com/java/technologies/downloads/#java11-wi
 ## 生成报告
 ```bash
 # 执行用例时，生成结果（默认增量数据）
-pytest testcase -s -v --alluredir=outputs/allure-results
+pytest tests -s -v --alluredir=outputs/allure-results
 
 # 执行用例时，生成结果（清除上一次数据）（基于 pytest.ini 默认参数）
-pytest testcase -s -v --alluredir=outputs/allure-results --clean-alluredir
+pytest tests -s -v --alluredir=outputs/allure-results --clean-alluredir
 ```
 ```bash
 # 根据结果，启动报告 web 服务（仅启服务，适合本地浏览）

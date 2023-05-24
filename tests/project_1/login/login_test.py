@@ -2,9 +2,8 @@ import pytest
 import allure
 
 from common.enums import UserType
-from common.tools import Tools
+from common.utils import Utils
 from request.project_1.login.login_request import LoginRequest
-from common.config import  Config
 
 @allure.epic("Project 1")
 @allure.feature("登录")
@@ -14,7 +13,7 @@ class LoginTest():
     @pytest.fixture(scope='function')
     def api(self):
         request = LoginRequest()
-        user = Tools.get_user(UserType.NORMAL_USER)
+        user = Utils.get_user(UserType.NORMAL_USER)
         request.data["username"] = user["username"]
         request.data["password"] = user["password"]
         yield request

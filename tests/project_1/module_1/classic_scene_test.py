@@ -2,9 +2,9 @@ import pytest
 import allure
 
 from common.enums import UserType
-from common.tools import Tools
+from common.utils import Utils
 from request.project_1.module_1.classic_scene_request import ClassicSceneRequest
-from common.config import Config
+from common.tools import Tools
 
 @allure.epic("Project 1")
 @allure.feature("Module 1")
@@ -15,13 +15,13 @@ class ClassicSceneTest():
     # scope=class 还需要做数据隔离，否则第2条用例拿到的数据会被第1条用例污染。可以用 _api = copy.deepcopy(api) 来做数据隔离。
     @pytest.fixture(scope='function')
     def api(self, login_with_user):
-        cookies = login_with_user(Tools.get_user(UserType.NORMAL_USER))
+        cookies = login_with_user(Utils.get_user(UserType.NORMAL_USER))
         request = ClassicSceneRequest(cookies=cookies)
         yield request
 
     @pytest.fixture(scope='function')
     def last_article_id(self, api):
-        # 也可以不通过 fixtures 的方式来获取动态数据，但 allure 报告中会出现在 Test body 中
+        # 也可以不通过 constants 的方式来获取动态数据，但 allure 报告中会出现在 Test body 中
         yield ClassicSceneRequest(cookies=api.cookies).get_user_last_article_id()
 
     @allure.title("成功请求")

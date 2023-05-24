@@ -1,12 +1,12 @@
-from common.base_request import BaseRequest
-from common.config import Config
-from common.db import Mysql
+from request.base_request import BaseRequest
+from common.utils import Utils
+
 
 class ClassicSceneRequest(BaseRequest):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.method = "POST"
-        self.host = Config.get_config("project_1_url")
+        self.host = Utils.base_url
         self.path = "/post"
         self.data = {
             "id": 1,

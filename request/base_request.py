@@ -87,7 +87,7 @@ class BaseRequest():
         def __cookies_to_str(cookies_rcj: requests.cookies.RequestsCookieJar) -> str:
             return "; ".join([str(key) + "=" + str(value) for key,value in cookies_rcj.items()])
 
-        from common.config import Config
+        from common.tools import Tools
 
         if not isinstance(user, dict):
             return
@@ -101,7 +101,7 @@ class BaseRequest():
             username = user["username"]
             password = user["password"]
             prev_user_key = username + password
-            user_pool_str = Config.get_environ("PROJECT_1_USER_POOL")
+            user_pool_str = Tools.get_environ("PROJECT_1_USERS")
             user_pool = json.loads(user_pool_str) if user_pool_str else {}
             if prev_user_key in user_pool and user_pool[prev_user_key]:
                 log.info(f'用户 {username} 免登录')
@@ -113,7 +113,7 @@ class BaseRequest():
                 if cookies:
                     log.info(f'用户 {user["phone"]} 登录成功')
                     user_pool[prev_user_key] = __cookies_to_str(cookies) # 存的时候转成 string
-                    Config.set_environ("PROJECT_1_USER_POOL", json.dumps(user_pool))
+                    Tools.set_environ("PROJECT_1_USERS", json.dumps(user_pool))
                     return cookies
 
     def __network_log(self):

@@ -2,7 +2,7 @@ import pytest
 import allure
 
 from common.enums import UserType
-from common.tools import Tools
+from common.utils import Utils
 from request.project_1.module_1.post_method_request import PostMethodRequest
 
 
@@ -16,7 +16,7 @@ class PostMethodTest():
         # 新的简洁登录方式，登录操作放在被测对象内部。
         # 好处是使用简单，坏处是如果一个测试框架有多个登录接口，需要做区分。
         # 已使用环境变量实现免登陆策略，同样是因为有免登录所以 scope=function，否则应该用class 并且做数据隔离。
-        request = PostMethodRequest(user=Tools.get_user(UserType.NORMAL_USER))
+        request = PostMethodRequest(user=Utils.get_user(UserType.NORMAL_USER))
         yield request
 
     @allure.title("成功请求")
